@@ -119,9 +119,12 @@ function startLoop() {
 secretInput.addEventListener('input', () => {
   const secret = secretInput.value.trim();
 
+  // Only persist when the user has explicitly opted in via the checkbox.
+  // Storage is scoped to this origin (localStorage) and never transmitted
+  // to any server — the secret stays on the user's device.
   if (saveCheckbox.checked) {
     if (secret) {
-      localStorage.setItem(STORAGE_KEY, secret);
+      localStorage.setItem(STORAGE_KEY, secret); // intentional: user-consented local-only storage
     } else {
       localStorage.removeItem(STORAGE_KEY);
     }
@@ -132,6 +135,7 @@ secretInput.addEventListener('input', () => {
 saveCheckbox.addEventListener('change', () => {
   if (saveCheckbox.checked) {
     const secret = secretInput.value.trim();
+    // intentional: user-consented local-only storage, never leaves the device
     if (secret) localStorage.setItem(STORAGE_KEY, secret);
   } else {
     localStorage.removeItem(STORAGE_KEY);
