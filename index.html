@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Offline-first Steam Guard 2FA code generator — your secret never leaves your device." />
+    <title>Steam TOTP</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <div class="logo">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+            <rect x="4" y="12" width="20" height="14" rx="3" stroke="currentColor" stroke-width="2"/>
+            <path d="M9 12V8a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="14" cy="19" r="2" fill="currentColor"/>
+          </svg>
+          <span>Steam TOTP</span>
+        </div>
+        <button id="theme-toggle" aria-label="Toggle theme" title="Toggle dark/light mode">
+          <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+      </header>
+
+      <main>
+        <section class="input-section">
+          <label for="secret-input" class="field-label">Shared Secret</label>
+          <div class="input-wrapper">
+            <input
+              type="password"
+              id="secret-input"
+              placeholder="Base64 encoded shared secret"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <button id="toggle-visibility" aria-label="Show/hide secret" title="Toggle visibility">
+              <svg class="icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg class="icon-eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+          <label class="save-label">
+            <input type="checkbox" id="save-secret" />
+            <span class="checkmark"></span>
+            <span>Remember secret in this browser</span>
+          </label>
+        </section>
+
+        <section class="code-section" id="code-section" aria-live="polite">
+          <div class="code-placeholder" id="code-placeholder">
+            <p>Enter your shared secret above to generate a code.</p>
+          </div>
+          <div class="code-display" id="code-display" style="display:none">
+            <div class="code-box">
+              <span id="totp-code" class="code">— — — — —</span>
+            </div>
+            <div class="timer-row">
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="progress-bar"></div>
+              </div>
+              <span id="countdown" class="countdown">30s</span>
+            </div>
+            <button id="copy-btn" class="copy-btn" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span id="copy-label">Copy Code</span>
+            </button>
+          </div>
+        </section>
+
+        <p class="privacy-note">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          Your secret is processed entirely in your browser and never sent anywhere.
+        </p>
+      </main>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
