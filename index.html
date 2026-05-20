@@ -39,12 +39,12 @@
 
       <main>
         <section class="input-section">
-          <label for="secret-input" class="field-label">Shared Secret</label>
+          <label for="secret-input" class="field-label">Steam Value</label>
           <div class="input-wrapper">
             <input
               type="password"
               id="secret-input"
-              placeholder="Base64 encoded shared secret"
+              placeholder="steam://... or Steam Value"
               autocomplete="off"
               spellcheck="false"
             />
@@ -60,16 +60,29 @@
               </svg>
             </button>
           </div>
-          <label class="save-label">
-            <input type="checkbox" id="save-secret" />
-            <span class="checkmark"></span>
-            <span>Remember secret in this browser</span>
-          </label>
+
+          <label for="name-input" class="field-label field-label-spaced">Token Name</label>
+          <div class="input-wrapper">
+            <input
+              type="text"
+              id="name-input"
+              placeholder="e.g. My Steam Account"
+              autocomplete="off"
+              spellcheck="false"
+              maxlength="64"
+            />
+          </div>
+
+          <div class="action-row">
+            <button id="save-btn" class="primary-btn" type="button">Save Token</button>
+            <button id="clear-btn" class="secondary-btn" type="button">Clear</button>
+          </div>
+          <p id="form-error" class="form-error" role="alert"></p>
         </section>
 
         <section class="code-section" id="code-section" aria-live="polite">
           <div class="code-placeholder" id="code-placeholder">
-            <p>Enter your shared secret above to generate a code.</p>
+            <p>Enter a Steam Value above (or pick a saved token) to generate a code.</p>
           </div>
           <div class="code-display" id="code-display" style="display:none">
             <div class="code-box">
@@ -89,6 +102,11 @@
               <span id="copy-label">Copy Code</span>
             </button>
           </div>
+        </section>
+
+        <section class="tokens-section" id="tokens-section" hidden>
+          <h2 class="section-title">Saved Tokens</h2>
+          <ul class="tokens-list" id="tokens-list"></ul>
         </section>
 
         <p class="privacy-note">
