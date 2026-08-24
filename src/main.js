@@ -40,6 +40,12 @@ let currentSlot = -1; // 30-second slot of currentCode
 let animFrameId = null;
 let pendingCodeReq = 0;
 
+function invalidateCode() {
+  pendingCodeReq++;
+  currentCode = '';
+  currentSlot = -1;
+}
+
 // ─── Theme ───────────────────────────────────────────────────────────────────
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
@@ -71,6 +77,7 @@ function showError(msg) {
 }
 
 function clearForm() {
+  invalidateCode();
   secretInput.value = '';
   nameInput.value = '';
   activeTokenId = null;
@@ -81,6 +88,7 @@ function clearForm() {
 }
 
 function setActiveToken(token) {
+  invalidateCode();
   activeTokenId = token.id;
   localStorage.setItem(ACTIVE_TOKEN_KEY, token.id);
   secretInput.value = token.secret;
@@ -159,6 +167,7 @@ function startLoop() {
 
 // ─── Input Handling ──────────────────────────────────────────────────────────
 secretInput.addEventListener('input', () => {
+  invalidateCode();
   // Editing the value detaches from any saved token until re-saved.
   if (activeTokenId) {
     activeTokenId = null;
@@ -167,8 +176,6 @@ secretInput.addEventListener('input', () => {
     renderTokens();
   }
   showError('');
-  // Reset slot so refreshCode regenerates immediately.
-  currentSlot = -1;
 });
 
 nameInput.addEventListener('input', () => showError(''));
@@ -235,10 +242,7 @@ function renderTokens() {
       <span class="token-meta">${t.id === activeTokenId ? 'Active' : 'Tap to load'}</span>
     `;
     main.querySelector('.token-name').textContent = t.name;
-    main.addEventListener('click', () => {
-      setActiveToken(t);
-      currentSlot = -1;
-    });
+    main.addEventListener('click', () => setActiveToken(t));
 
     const del = document.createElement('button');
     del.type = 'button';
@@ -291,7 +295,7 @@ copyBtn.addEventListener('click', async () => {
 });
 
 // ─── Boot ────────────────────────────────────────────────────────────────────
-migrateLegacy();
+const migrated = migrateLegacy();
 
 const lastActive = localStorage.getItem(ACTIVE_TOKEN_KEY);
 const tokens = loadTokens();
@@ -301,7 +305,10 @@ if (lastActive) {
     setActiveToken(found);
   } else {
     localStorage.removeItem(ACTIVE_TOKEN_KEY);
+    if (migrated) setActiveToken(migrated);
   }
+} else if (migrated) {
+  setActiveToken(migrated);
 }
 renderTokens();
 startLoop();
